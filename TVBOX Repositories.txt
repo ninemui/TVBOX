@@ -1,0 +1,12 @@
+TVBOX Repositories:
+
+# === Repository 1 ===
+git remote add upstream-repo1 https://github.com/phu889/kjh998.git
+git fetch upstream-repo1
+git subtree add --prefix=KJH998 upstream-repo1 main --squash
+
+# === Repository 2 ===
+git remote add upstream-repo2 https://github.com/FGBLH/EHR663.git
+git fetch upstream-repo2
+git subtree add --prefix=EHR663 upstream-repo2 main --squash
+

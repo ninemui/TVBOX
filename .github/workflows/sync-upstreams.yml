@@ -1,0 +1,37 @@
+name: Sync Upstream Repositories
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # Every day at 06:00 UTC (change if you want)
+  workflow_dispatch:       # Allows manual trigger from GitHub
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Sync KJH998
+        run: |
+          git remote add upstream-repo1 https://github.com/phu889/kjh998.git || true
+          git fetch upstream-repo1
+          git subtree pull --prefix=KJH998 upstream-repo1 main --squash || echo "No new changes or conflict in KJH998"
+
+      - name: Sync EHR663
+        run: |
+          git remote add upstream-repo2 https://github.com/FGBLH/EHR663.git || true
+          git fetch upstream-repo2
+          git subtree pull --prefix=EHR663 upstream-repo2 main --squash || echo "No new changes or conflict in EHR663"
+
+      - name: Push changes
+        run: |
+          git push origin HEAD:${{ github.ref_name }}
