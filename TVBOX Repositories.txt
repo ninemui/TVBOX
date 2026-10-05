@@ -10,3 +10,46 @@ git remote add upstream-repo2 https://github.com/FGBLH/EHR663.git
 git fetch upstream-repo2
 git subtree add --prefix=EHR663 upstream-repo2 main --squash
 
+https://github.com/ninemui/qistBOX
+https://github.com/qist/tvbox.git
+
+----------------------------- Auto Fetch -----------------------------
+
+name: Sync Upstream Repositories
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # every day at 06:00 UTC
+  workflow_dispatch:       # manual trigger
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Sync repo1
+        run: |
+          git remote add upstream-repo1 https://github.com/phu889/kjh998.git || true
+          git fetch upstream-repo1
+          git subtree pull --prefix=KJH998 upstream-repo1 main --squash || true
+
+      - name: Sync repo2
+        run: |
+          git remote add upstream-repo2 https://github.com/FGBLH/EHR663.git || true
+          git fetch upstream-repo2
+          git subtree pull --prefix=EHR663 upstream-repo2 main --squash || true
+
+      # Add more blocks for additional repositories...
+
+      - name: Push changes
+        run: |
+          git push origin HEAD:main
