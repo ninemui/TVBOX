@@ -7,7 +7,7 @@ on:
 
 permissions:
   contents: write
-  
+
 jobs:
   sync:
     runs-on: ubuntu-latest
@@ -24,16 +24,26 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Sync KJH998
+        continue-on-error: true
         run: |
+          echo "=== Syncing KJH998 ==="
           git remote add upstream-repo1 https://github.com/phu889/kjh998.git || true
-          git fetch upstream-repo1
-          git subtree pull --prefix=KJH998 upstream-repo1 main --squash || echo "No new changes or conflict in KJH998"
+          if git fetch upstream-repo1; then
+            git subtree pull --prefix=KJH998 upstream-repo1 main --squash || echo "No new changes or conflict in KJH998"
+          else
+            echo "⚠️ Failed to fetch KJH998 – skipping this repository"
+          fi
 
       - name: Sync EHR663
+        continue-on-error: true
         run: |
+          echo "=== Syncing EHR663 ==="
           git remote add upstream-repo2 https://github.com/FGBLH/EHR663.git || true
-          git fetch upstream-repo2
-          git subtree pull --prefix=EHR663 upstream-repo2 main --squash || echo "No new changes or conflict in EHR663"
+          if git fetch upstream-repo2; then
+            git subtree pull --prefix=EHR663 upstream-repo2 main --squash || echo "No new changes or conflict in EHR663"
+          else
+            echo "⚠️ Failed to fetch EHR663 – skipping this repository"
+          fi
 
       - name: Push changes
         run: |
