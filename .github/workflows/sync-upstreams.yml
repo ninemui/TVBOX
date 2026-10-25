@@ -2,49 +2,44 @@ name: Sync Upstream Repositories
 
 on:
   schedule:
-    - cron: '0 6 * * *'   # Every day at 06:00 UTC (change if you want)
-  workflow_dispatch:       # Allows manual trigger from GitHub
-
-permissions:
-  contents: write
+    - cron: '0 6 * * *'   # every day at 06:00 UTC
+  workflow_dispatch:       # manual trigger
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Sync KJH998
-        continue-on-error: true
+      - name: Sync repo1
         run: |
-          echo "=== Syncing KJH998 ==="
           git remote add upstream-repo1 https://github.com/phu889/kjh998.git || true
-          if git fetch upstream-repo1; then
-            git subtree pull --prefix=KJH998 upstream-repo1 main --squash || echo "No new changes or conflict in KJH998"
-          else
-            echo "⚠️ Failed to fetch KJH998 – skipping this repository"
-          fi
+          git fetch upstream-repo1
+          git subtree pull --prefix=KJH998 upstream-repo1 main --squash || true
 
-      - name: Sync EHR663
-        continue-on-error: true
+      - name: Sync repo2
         run: |
-          echo "=== Syncing EHR663 ==="
           git remote add upstream-repo2 https://github.com/FGBLH/EHR663.git || true
-          if git fetch upstream-repo2; then
-            git subtree pull --prefix=EHR663 upstream-repo2 main --squash || echo "No new changes or conflict in EHR663"
-          else
-            echo "⚠️ Failed to fetch EHR663 – skipping this repository"
-          fi
+          git fetch upstream-repo2
+          git subtree pull --prefix=EHR663 upstream-repo2 main --squash || true
+
+      - name: Sync repo3
+        run: |
+          git remote add upstream-repo3 https://github.com/EasyXC/EasyTVbox.git
+          git fetch upstream-repo3
+          git subtree add --prefix=EasyTVbox upstream-repo3 main --squash || true
+
+
+      # Add more blocks for additional repositories...
 
       - name: Push changes
         run: |
-          git push origin HEAD:${{ github.ref_name }}
+          git push origin HEAD:main

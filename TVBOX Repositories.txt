@@ -10,8 +10,11 @@ git remote add upstream-repo2 https://github.com/FGBLH/EHR663.git
 git fetch upstream-repo2
 git subtree add --prefix=EHR663 upstream-repo2 main --squash
 
-https://github.com/ninemui/qistBOX
-https://github.com/qist/tvbox.git
+# === Repository 3 ===
+git remote add upstream-repo3 https://github.com/EasyXC/EasyTVbox.git
+git fetch upstream-repo3
+git subtree add --prefix=EasyTVbox upstream-repo3 main --squash
+
 
 ----------------------------- Auto Fetch -----------------------------
 
@@ -47,6 +50,13 @@ jobs:
           git remote add upstream-repo2 https://github.com/FGBLH/EHR663.git || true
           git fetch upstream-repo2
           git subtree pull --prefix=EHR663 upstream-repo2 main --squash || true
+
+      - name: Sync repo3
+        run: |
+          git remote add upstream-repo3 https://github.com/EasyXC/EasyTVbox.git
+          git fetch upstream-repo3
+          git subtree add --prefix=EasyTVbox upstream-repo3 main --squash || true
+
 
       # Add more blocks for additional repositories...
 
