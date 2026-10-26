@@ -31,11 +31,6 @@ jobs:
           git fetch upstream-repo2
           git subtree pull --prefix=EHR663 upstream-repo2 main --squash || true
 
-      - name: Sync repo3
-        run: |
-          git remote add upstream-repo3 https://github.com/EasyXC/EasyTVbox.git
-          git fetch upstream-repo3
-          git subtree pull --prefix=EasyTVbox upstream-repo3 main --squash || true
 
 
       # Add more blocks for additional repositories...
