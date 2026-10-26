@@ -2,8 +2,11 @@ name: Sync Upstream Repositories
 
 on:
   schedule:
-    - cron: '0 6 * * *'   # every day at 06:00 UTC
-  workflow_dispatch:       # manual trigger
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write   # required for the final push
 
 jobs:
   sync:
@@ -19,11 +22,17 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Sync repo1
+      - name: Sync repo1 (KJH998)
         run: |
-          git remote add upstream-repo1 https://github.com/phu889/kjh998.git || true
+          git remote remove upstream-repo1 2>/dev/null || true
+          git remote add upstream-repo1 https://github.com/phu889/kjh998.git
           git fetch upstream-repo1
-          git subtree pull --prefix=KJH998 upstream-repo1 main --squash || true
+          if [ -d KJH998 ]; then
+            git subtree pull --prefix=KJH998 upstream-repo1 main --squash
+          else
+            git subtree add --prefix=KJH998 upstream-repo1 main --squash
+          fi
+
 
       - name: Sync repo2
         run: |
@@ -42,8 +51,24 @@ jobs:
           fi
 
 
-      # Add more blocks for additional repositories...
-
-      - name: Push changes
+      - name: Sync repo3 (EasyTVbox)
         run: |
-          git push origin HEAD:main
+          git remote remove upstream-repo3 2>/dev/null || true
+          git remote add upstream-repo3 https://github.com/EasyXC/EasyTVbox.git
+          git fetch upstream-repo3
+          if [ -d EasyTVbox ]; then
+            git subtree pull --prefix=EasyTVbox upstream-repo3 main --squash
+          else
+            git subtree add --prefix=EasyTVbox upstream-repo3 main --squash
+          fi
+
+      # Add more blocks for additional repositories...
+      
+      - name: Push changes (only if there are any)
+        run: |
+          if git diff --quiet HEAD origin/main 2>/dev/null; then
+            echo "No changes to push"
+          else
+            git push origin HEAD:main
+          fi
+          
