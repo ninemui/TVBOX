@@ -27,10 +27,19 @@ jobs:
 
       - name: Sync repo2
         run: |
+          git remote remove upstream-repo2 2>/dev/null || true
           git remote add upstream-repo2 https://github.com/FGBLH/EHR663.git || true
-          git fetch upstream-repo2
-          git subtree pull --prefix=EHR663 upstream-repo2 main --squash || true
-
+      
+          # Try to fetch; if the upstream no longer exists, just skip
+          if git fetch upstream-repo2; then
+            if [ -d EHR663 ]; then
+              git subtree pull --prefix=EHR663 upstream-repo2 main --squash || true
+            else
+              git subtree add --prefix=EHR663 upstream-repo2 main --squash || true
+            fi
+          else
+            echo "Upstream FGBLH/EHR663 no longer exists – keeping local EHR663 as-is"
+          fi
 
 
       # Add more blocks for additional repositories...
