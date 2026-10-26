@@ -35,7 +35,7 @@ jobs:
         run: |
           git remote add upstream-repo3 https://github.com/EasyXC/EasyTVbox.git
           git fetch upstream-repo3
-          git subtree add --prefix=EasyTVbox upstream-repo3 main --squash || true
+          git subtree pull --prefix=EasyTVbox upstream-repo3 main --squash || true
 
 
       # Add more blocks for additional repositories...
