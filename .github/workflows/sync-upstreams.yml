@@ -26,15 +26,20 @@ jobs:
         run: |
           git remote remove upstream-repo1 2>/dev/null || true
           git remote add upstream-repo1 https://github.com/phu889/kjh998.git
-          git fetch upstream-repo1
-          if [ -d KJH998 ]; then
-            git subtree pull --prefix=KJH998 upstream-repo1 main --squash
+      
+          # Try to fetch; if the upstream no longer exists, just skip
+          if git fetch upstream-repo1; then
+            if [ -d KJH998 ]; then
+              git subtree pull --prefix=KJH998 upstream-repo1 main --squash || true
+            else
+              git subtree add --prefix=KJH998 upstream-repo1 main --squash || true
+            fi
           else
-            git subtree add --prefix=KJH998 upstream-repo1 main --squash
+            echo "Upstream phu889/KJH998 no longer exists – keeping local KJH998 as-is"
           fi
-
-
-      - name: Sync repo2
+          
+          
+      - name: Sync repo2 (EHR663)
         run: |
           git remote remove upstream-repo2 2>/dev/null || true
           git remote add upstream-repo2 https://github.com/FGBLH/EHR663.git || true
@@ -55,13 +60,19 @@ jobs:
         run: |
           git remote remove upstream-repo3 2>/dev/null || true
           git remote add upstream-repo3 https://github.com/EasyXC/EasyTVbox.git
-          git fetch upstream-repo3
-          if [ -d EasyTVbox ]; then
-            git subtree pull --prefix=EasyTVbox upstream-repo3 main --squash
+      
+          # Try to fetch; if the upstream no longer exists, just skip
+          if git fetch upstream-repo3; then
+            if [ -d EasyTVbox ]; then
+              git subtree pull --prefix=EasyTVbox upstream-repo3 main --squash || true
+            else
+              git subtree add --prefix=EasyTVbox upstream-repo3 main --squash || true
+            fi
           else
-            git subtree add --prefix=EasyTVbox upstream-repo3 main --squash
+            echo "Upstream EasyXC/EasyTVbox no longer exists – keeping local EasyTVbox as-is"
           fi
-
+          
+          
       # Add more blocks for additional repositories...
       
       - name: Push changes (only if there are any)
