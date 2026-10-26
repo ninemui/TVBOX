@@ -2,11 +2,8 @@ name: Sync Upstream Repositories
 
 on:
   schedule:
-    - cron: '0 6 * * *'
-  workflow_dispatch:
-
-permissions:
-  contents: write   # required for the final push
+    - cron: '0 6 * * *'   # every day at 06:00 UTC
+  workflow_dispatch:       # manual trigger
 
 jobs:
   sync:
@@ -22,53 +19,27 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Sync repo1 (KJH998)
+      - name: Sync repo1
         run: |
-          git remote remove upstream-repo1 2>/dev/null || true
-          git remote add upstream-repo1 https://github.com/phu889/kjh998.git
+          git remote add upstream-repo1 https://github.com/phu889/kjh998.git || true
           git fetch upstream-repo1
-          if [ -d KJH998 ]; then
-            git subtree pull --prefix=KJH998 upstream-repo1 main --squash
-          else
-            git subtree add --prefix=KJH998 upstream-repo1 main --squash
-          fi
+          git subtree pull --prefix=KJH998 upstream-repo1 main --squash || true
 
+      #- name: Sync repo2
+        #run: |
+          #git remote add upstream-repo2 https://github.com/FGBLH/EHR663.git || true
+          #git fetch upstream-repo2
+          #git subtree pull --prefix=EHR663 upstream-repo2 main --squash || true
 
-      - name: Sync repo2
+      - name: Sync repo3
         run: |
-          git remote remove upstream-repo2 2>/dev/null || true
-          git remote add upstream-repo2 https://github.com/FGBLH/EHR663.git || true
-      
-          # Try to fetch; if the upstream no longer exists, just skip
-          if git fetch upstream-repo2; then
-            if [ -d EHR663 ]; then
-              git subtree pull --prefix=EHR663 upstream-repo2 main --squash || true
-            else
-              git subtree add --prefix=EHR663 upstream-repo2 main --squash || true
-            fi
-          else
-            echo "Upstream FGBLH/EHR663 no longer exists – keeping local EHR663 as-is"
-          fi
-
-
-      - name: Sync repo3 (EasyTVbox)
-        run: |
-          git remote remove upstream-repo3 2>/dev/null || true
           git remote add upstream-repo3 https://github.com/EasyXC/EasyTVbox.git
           git fetch upstream-repo3
-          if [ -d EasyTVbox ]; then
-            git subtree pull --prefix=EasyTVbox upstream-repo3 main --squash
-          else
-            git subtree add --prefix=EasyTVbox upstream-repo3 main --squash
-          fi
+          git subtree pull --prefix=EasyTVbox upstream-repo3 main --squash || true
+
 
       # Add more blocks for additional repositories...
-      
-      - name: Push changes (only if there are any)
+
+      - name: Push changes
         run: |
-          if git diff --quiet HEAD origin/main 2>/dev/null; then
-            echo "No changes to push"
-          else
-            git push origin HEAD:main
-          fi
-          
+          git push origin HEAD:main
